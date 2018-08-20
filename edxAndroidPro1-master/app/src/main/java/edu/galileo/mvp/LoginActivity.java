@@ -2,10 +2,8 @@ package edu.galileo.mvp;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
@@ -16,7 +14,9 @@ import android.widget.Toast;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements LoginView {
+
+    private LoginPresenter loginPresenter;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -44,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        loginPresenter = new LoginPresenterImpl(this);
     }
 
     /**
@@ -52,9 +54,6 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
@@ -64,22 +63,19 @@ public class LoginActivity extends AppCompatActivity {
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        boolean cancel = false;
-        View focusView = null;
-
-
+        loginPresenter.validateCredentials(email, password);
     }
-
 
     /**
      * Shows the progress UI and hides the login form.
      */
+    @Override
     public void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-            show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
 
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -89,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
         mProgressView.animate().setDuration(shortAnimTime).alpha(
-            show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
 
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -98,6 +94,21 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void setUsernameError(int messageResId) {
+        mEmailView.setError(getString(messageResId));
+        mEmailView.requestFocus();
+    }
 
+    @Override
+    public void setPasswordError(int messageResId) {
+        mPasswordView.setError(getString(messageResId));
+        mPasswordView.requestFocus();
+    }
+
+    @Override
+    public void successAction() {
+        Toast.makeText(this, "Success!!", Toast.LENGTH_SHORT).show();
+    }
 }
 
