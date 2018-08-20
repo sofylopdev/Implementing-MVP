@@ -2,9 +2,13 @@ package edu.galileo.mvp;
 
 import android.os.AsyncTask;
 
-public class LoginModelImpl implements LoginModel {
+import org.greenrobot.eventbus.EventBus;
 
-    private OnLoginFinishedListener listener;
+import edu.galileo.mvp.events.CanceledEvent;
+import edu.galileo.mvp.events.PasswordErrorEvent;
+import edu.galileo.mvp.events.SuccessEvent;
+
+public class LoginModelImpl implements LoginModel {
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -15,9 +19,7 @@ public class LoginModelImpl implements LoginModel {
     };
 
     @Override
-    public void login(String username, String password, OnLoginFinishedListener listener) {
-        this.listener = listener;
-
+    public void login(String username, String password) {
         //call the login task
         new UserLoginTask(username, password).execute((Void) null);
     }
@@ -67,11 +69,13 @@ public class LoginModelImpl implements LoginModel {
 
             if (success) {
                 // Toast.makeText(LoginActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                listener.onSuccess();
+                EventBus.getDefault().post(new SuccessEvent());
+               // listener.onSuccess();
             } else {
                 // mPasswordView.setError(getString(R.string.error_incorrect_password));
                 // mPasswordView.requestFocus();
-                listener.onPasswordError();
+                EventBus.getDefault().post(new PasswordErrorEvent());
+               // listener.onPasswordError();
             }
         }
 
@@ -79,7 +83,8 @@ public class LoginModelImpl implements LoginModel {
         protected void onCancelled() {
             // mAuthTask = null;
             // showProgress(false);
-            listener.onCanceled();
+            EventBus.getDefault().post(new CanceledEvent());
+            //listener.onCanceled();
         }
     }
 }

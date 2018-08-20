@@ -2,7 +2,7 @@ package edu.galileo.mvp;
 
 import android.text.TextUtils;
 
-public class LoginPresenterImpl implements LoginPresenter, LoginModel.OnLoginFinishedListener {
+public class LoginPresenterImpl implements LoginPresenter {
 
     private LoginView loginView;
     private LoginModel loginModel;
@@ -49,25 +49,25 @@ public class LoginPresenterImpl implements LoginPresenter, LoginModel.OnLoginFin
 //            mAuthTask.execute((Void) null);
 //        }
         loginView.showProgress(true);
-        loginModel.login(username, password, this);
+        loginModel.login(username, password);
     }
 
-    @Override
-    public void onCanceled() {
-        loginView.showProgress(false);
-    }
-
-    @Override
-    public void onPasswordError() {
-        loginView.showProgress(false);
-        loginView.setPasswordError(R.string.error_incorrect_password);
-    }
-
-    @Override
-    public void onSuccess() {
-        loginView.showProgress(false);
-        loginView.successAction();
-    }
+//    @Override
+//    public void onCanceled() {
+//        loginView.showProgress(false);
+//    }
+//
+//    @Override
+//    public void onPasswordError() {
+//        loginView.showProgress(false);
+//        loginView.setPasswordError(R.string.error_incorrect_password);
+//    }
+//
+//    @Override
+//    public void onSuccess() {
+//        loginView.showProgress(false);
+//        loginView.successAction();
+//    }
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
